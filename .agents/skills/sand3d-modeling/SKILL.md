@@ -10,7 +10,7 @@ description: >-
 
 ## 1. Tài liệu tham chiếu API
 
-- Đọc [sand3d_api.md](../../../sand3d_api.md) khi cần tra cứu đầy đủ chữ ký hàm của `sand3d` (~3.600 token).
+- Đọc [sand3d-reference.constants.ts](../../../api/src/modules/agent/constants/sand3d-reference.constants.ts) khi cần tra cứu đầy đủ chữ ký hàm của `sand3d`.
 - Dùng đúng quy ước `import sand3d as s3d`, đơn vị mặc định `mm`, trả về `s3d.assembly(...)` hoặc đối tượng gốc và xuất bằng `s3d.export(root, path)`.
 
 ## 2. Quy tắc an toàn khi chạy trên Server (Ubuntu / Windows Worker)

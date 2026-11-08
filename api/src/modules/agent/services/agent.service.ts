@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subject, Observable } from 'rxjs';
 import OpenAI from 'openai';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { ProjectEntity } from '../../database/entities/project.entity.js';
 import { ProjectRevisionEntity } from '../../database/entities/project-revision.entity.js';
 import { ProjectMessageEntity } from '../../database/entities/project-message.entity.js';
@@ -22,6 +21,7 @@ import type {
   ToolStep,
 } from '../interfaces/agent-session.interface.js';
 import type { SendPromptDto } from '../dto/send-prompt.dto.js';
+import { SAND3D_API_REFERENCE } from '../constants/sand3d-reference.constants.js';
 import {
   formatJointLabel,
   formatPartLabel,
@@ -32,9 +32,8 @@ import {
 } from '../utils/code-patcher.util.js';
 
 @Injectable()
-export class AgentService implements OnModuleInit {
+export class AgentService {
   private streams = new Map<string, Subject<AgentStreamEvent>>();
-  private sand3dApiDoc = '';
 
   constructor(
     private readonly config: ConfigService,
@@ -46,13 +45,6 @@ export class AgentService implements OnModuleInit {
     @InjectRepository(ProjectMessageEntity)
     private readonly messageRepo: Repository<ProjectMessageEntity>,
   ) {}
-
-  async onModuleInit() {
-    const apiDocPath = path.resolve(process.cwd(), '..', '..', 'sand3d_api.md');
-    if (fs.existsSync(apiDocPath)) {
-      this.sand3dApiDoc = fs.readFileSync(apiDocPath, 'utf-8');
-    }
-  }
 
   getStream(projectId: string): Observable<AgentStreamEvent> {
     if (!this.streams.has(projectId)) {
@@ -514,7 +506,7 @@ export class AgentService implements OnModuleInit {
         '5. Trả lời bằng tiếng Việt ngắn gọn, tự nhiên, đi thẳng vào kết quả. Tuyệt đối KHÔNG nhắc đến tên thư viện nội bộ (`sand3d`, `bpy`), không dùng câu chữ sáo rỗng, không dùng emoji.',
         '',
         'TÀI LIỆU THAM CHIẾU API:',
-        this.sand3dApiDoc,
+        SAND3D_API_REFERENCE,
       ].join('\n');
 
       const conversationHistory: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =

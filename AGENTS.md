@@ -28,13 +28,13 @@ Tài liệu này áp dụng bắt buộc cho mọi thành phần trong workspace
 
 - **Cấm tuyệt đối code inline (Zero Inline Types / Helpers / Utils):**
   - Mọi `interface`, `type`, `DTO`, `schema`, `constant`, `helper`, `utility` bắt buộc phải tách ra file riêng theo đúng chức năng (`types/`, `dto/`, `schemas/`, `utils/`, `constants/`). Không khai báo `interface`, `type`, hàm helper hay hằng số lẫn lộn ngay trong file Component, Controller hay Service.
-- **Frontend (`/apps/web`):**
+- **Frontend (`/web`):**
   - Stack: React + Vite + TypeScript + Tailwind CSS + `shadcn/ui` + Three.js (`@react-three/fiber`, `@react-three/drei`) + `zustand` (quản lý state & Auth store) + `@tanstack/react-query` (data fetching & mutations) + `react-hook-form` + `zod` + `@hookform/resolvers`.
   - **Xác thực (Auth):** Xác thực qua **HTTP-Only Cookie** (`credentials: 'include'`) gọi tới API `/api/auth/*`. **CẤM** lưu token hay thông tin nhạy cảm vào `localStorage` hoặc `sessionStorage`.
   - Cấu trúc thư mục chuẩn: `src/pages/`, `src/features/`, `src/components/`, `src/stores/`, `src/services/`, `src/schemas/`, `src/types/`, `src/utils/`.
-- **Backend API & Agent Orchestrator (`/apps/api`):**
+- **Backend API & Agent Orchestrator (`/api`):**
   - Stack: NestJS (TypeScript) + `class-validator` + `class-transformer` (bật `ValidationPipe` toàn cục với `whitelist: true, forbidNonWhitelisted: true, transform: true`) + `cookie-parser` (quản lý phiên đăng nhập qua HTTP-Only Cookie).
-  - Chia tách rõ từng module (`src/modules/auth/`, `src/modules/agent/`, `src/common/`) với các thư mục con chuẩn: `controllers/`, `services/`, `dto/`, `interfaces/`, `constants/`, `guards/`, `utils/`.
-- **Python Geometry Engine (`/services/cad-worker`):**
+  - Chia tách rõ từng module (`src/modules/auth/`, `src/modules/agent/`, `src/modules/projects/`, `src/modules/database/`, `src/modules/storage/`) với các thư mục con chuẩn: `controllers/`, `services/`, `dto/`, `interfaces/`, `constants/`, `guards/`, `utils/`.
+- **Python Geometry Engine (`/cad-worker`):**
   - Stack: FastAPI + Pydantic v2 chạy trên `.venv` (`sand3d` + `bpy`).
   - Chia tách cấu trúc thư mục rõ ràng: `app/routers/`, `app/schemas/`, `app/services/`, `app/utils/`, `app/constants/`.

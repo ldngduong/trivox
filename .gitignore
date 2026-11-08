@@ -20,7 +20,7 @@ __pycache__/
 !.env.example
 
 # Runtime generated 3D assets & local storage
-apps/api/storage/
+api/storage/
 *.glb
 *.blend
 *.blend1

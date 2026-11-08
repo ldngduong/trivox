@@ -1,39 +1,39 @@
-﻿# sand3d
+﻿export const SAND3D_API_REFERENCE = `# sand3d
 
-`import sand3d as s3d`; mm, or `units("m")` first. Makers take a name, return the solid; edits return
+\`import sand3d as s3d\`; mm, or \`units("m")\` first. Makers take a name, return the solid; edits return
 it. Edges and faces go by their maker's names (top bottom side rim seam start end cut, tool names,
 plate.top).
 
-1. A placement is a frame plus values. `at` sets the values it is given and keeps the others; `on=`
-   changes the frame, and x, y, z then run along its axes; `transform` moves the whole thing, as a parent
+1. A placement is a frame plus values. \`at\` sets the values it is given and keeps the others; \`on=\`
+   changes the frame, and x, y, z then run along its axes; \`transform\` moves the whole thing, as a parent
    would, mirror included.
-2. To repeat, pass a list of frames to `on=`: once per frame, in `at`, `hole` and `pocket`.
+2. To repeat, pass a list of frames to \`on=\`: once per frame, in \`at\`, \`hole\` and \`pocket\`.
 3. A list of objects is worth its elements, wherever a verb takes objects.
-4. What a verb uses up no longer exists. `copy` keeps it; always use what `at` returns.
-5. Every solid starts at z = 0, centred in x and y: `box` is the `extrude` of its `rect`; `extrude(both=True)`
+4. What a verb uses up no longer exists. \`copy\` keeps it; always use what \`at\` returns.
+5. Every solid starts at z = 0, centred in x and y: \`box\` is the \`extrude\` of its \`rect\`; \`extrude(both=True)\`
    centres one on its plane. A face's frame starts where the origin projects onto it: a vertical face's, at
    its foot. A frame's Z is the face's normal; on a face whose normal is ±Z its X is +X, on any other
    X is Z × normal: on a face looking +X, X is +Y and Y is up. A side, an edge or a corner of a box is
-   named by directions: `bbox(ob, "+X")` is the centre of that side of its bounding box, `"+X-Y"` the
-   middle of an edge, `"+X-Y+Z"` a corner, with the axes of a face looking the first way named, on a part
-   or a group; `at`'s `anchor` takes the same ("-Z", "+Y-Z"; its words top bottom left right front back
+   named by directions: \`bbox(ob, "+X")\` is the centre of that side of its bounding box, \`"+X-Y"\` the
+   middle of an edge, \`"+X-Y+Z"\` a corner, with the axes of a face looking the first way named, on a part
+   or a group; \`at\`'s \`anchor\` takes the same ("-Z", "+Y-Z"; its words top bottom left right front back
    are +Z -Z -X +X -Y +Y).
-6. A joint lets a part move on another. Place the part first: `joint` does not move it, it says how it
-   moves — on the part its frame `on` was read on (`ob.face`, `bbox`, `local`, an assembly's anchor; it
-   stays read on it through `.move`, `.turn`, `.offset`), about or along `axis`: a direction ("+Z", "-X"…)
-   in the space the parent lives in, as in `face`, or "normal", `on`'s Z. A pivot given as numbers — a
-   source's joint origin, xyz and rpy — is `local(parent, x, y, z, rx, ry, rz)`, in the parent's own space:
-   `at(child, on=…)` places the child there, `joint` hangs it there. Positive values slide along the axis,
+6. A joint lets a part move on another. Place the part first: \`joint\` does not move it, it says how it
+   moves — on the part its frame \`on\` was read on (\`ob.face\`, \`bbox\`, \`local\`, an assembly's anchor; it
+   stays read on it through \`.move\`, \`.turn\`, \`.offset\`), about or along \`axis\`: a direction ("+Z", "-X"…)
+   in the space the parent lives in, as in \`face\`, or "normal", \`on\`'s Z. A pivot given as numbers — a
+   source's joint origin, xyz and rpy — is \`local(parent, x, y, z, rx, ry, rz)\`, in the parent's own space:
+   \`at(child, on=…)\` places the child there, \`joint\` hangs it there. Positive values slide along the axis,
    or turn by the right hand about it: about +Z, +X turns toward +Y — a door hinged on the -Y edge of a +X
    face opens outward about "-Z". The range contains 0; a joint that follows another takes its range from
-   it. Everything is built at rest, every joint at 0; `pose(child, value)` moves the mechanism. A part with
-   no joint moves with its group; a jointed part moves by its joint, whatever group it is in; `on` is never
-   read on the child itself. Joints may come before or after `group`/`assembly`. `copy` copies a jointed
-   part's joints (it hangs on the same parent); `transform` moves the part with its pivot (a mirror image
-   moves as the image of the motion); `at` refuses it. Two joints on one child compose in order (a screw: a
-   turn, and a slide that follows it with `ratio=pitch / 360`).
+   it. Everything is built at rest, every joint at 0; \`pose(child, value)\` moves the mechanism. A part with
+   no joint moves with its group; a jointed part moves by its joint, whatever group it is in; \`on\` is never
+   read on the child itself. Joints may come before or after \`group\`/\`assembly\`. \`copy\` copies a jointed
+   part's joints (it hangs on the same parent); \`transform\` moves the part with its pivot (a mirror image
+   moves as the image of the motion); \`at\` refuses it. Two joints on one child compose in order (a screw: a
+   turn, and a slide that follows it with \`ratio=pitch / 360\`).
 
-```python
+\`\`\`python
 # profiles
 rect(w, d, r=0, chamfer=0)  # Centred; corners rounded or cut
 circle(d)  # Centred
@@ -115,9 +115,9 @@ export(root, path)  # root and what hangs on it by its joints, in metres: .glb a
 empty_scene()  # Fresh scene
 units(name=None)  # Length unit: "mm" (default), "cm", "m"
 fingerprint()  # Digest of the source
-```
+\`\`\`
 
-```python
+\`\`\`python
 def bracket(w=80, d=40, t=6, hole_d=6.6, pitch=50):
     plate = s3d.extrude("plate", s3d.rect(w, d, r=4), t)
     s3d.hole(plate, hole_d, on=s3d.grid(2, 1, pitch, 0))
@@ -156,5 +156,7 @@ def gate(w=750, h=1200, post=100):
     gate = s3d.assembly("gate", l_post, r_post, leaf, twin)
     s3d.pose(leaf, 60)
     return gate
-```
+\`\`\`
+
+`;
 
