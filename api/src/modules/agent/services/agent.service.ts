@@ -398,9 +398,6 @@ export class AgentService {
     };
 
     const groqKey = (this.config.get<string>('GROQ_API_KEY') || '').trim();
-    const deepseekKey = (
-      this.config.get<string>('DEEPSEEK_API_KEY') || ''
-    ).trim();
 
     try {
       let project = await this.projectRepo.findOne({
@@ -408,7 +405,7 @@ export class AgentService {
       });
       if (!project) return;
 
-      if (!deepseekKey && !groqKey) {
+      if (!groqKey) {
         const missingStep = addStep(
           `step-key-${Date.now()}`,
           'Kiểm tra dịch vụ xử lý',
@@ -416,7 +413,7 @@ export class AgentService {
         finishStep(
           missingStep,
           'error',
-          'Dịch vụ AI chưa được cấu hình trên máy chủ.',
+          'Chưa cấu hình GROQ_API_KEY trên máy chủ.',
           5,
         );
 
@@ -425,7 +422,7 @@ export class AgentService {
             projectId,
             role: 'assistant',
             content:
-              'Máy chủ hiện chưa cấu hình khóa dịch vụ AI trong tệp môi trường (.env).',
+              'Máy chủ hiện chưa cấu hình GROQ_API_KEY trong tệp môi trường (api/.env).',
             steps,
           }),
         );
@@ -481,19 +478,14 @@ export class AgentService {
             `${m.role === 'user' ? 'Người dùng' : 'Trợ lý'}: ${m.content.slice(0, 300)}`,
         );
 
-      const useDeepSeek = Boolean(deepseekKey);
       const llmClient = new OpenAI({
-        apiKey: useDeepSeek ? deepseekKey : groqKey,
-        baseURL: useDeepSeek
-          ? this.config.get<string>('DEEPSEEK_BASE_URL') ||
-            'https://api.deepseek.com'
-          : this.config.get<string>('GROQ_BASE_URL') ||
-            'https://api.groq.com/openai/v1',
+        apiKey: groqKey,
+        baseURL:
+          this.config.get<string>('GROQ_BASE_URL') ||
+          'https://api.groq.com/openai/v1',
       });
-      const llmModel = useDeepSeek
-        ? this.config.get<string>('DEEPSEEK_MODEL') || 'deepseek-chat'
-        : this.config.get<string>('GROQ_FALLBACK_MODEL') ||
-          'openai/gpt-oss-120b';
+      const llmModel =
+        this.config.get<string>('GROQ_CODE_MODEL') || 'openai/gpt-oss-120b';
 
       const systemPrompt = [
         'Bạn là kỹ sư thiết kế 3D chuyên nghiệp trong nền tảng Trivox.',

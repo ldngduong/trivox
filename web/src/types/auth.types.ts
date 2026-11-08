@@ -11,11 +11,6 @@ export interface AuthMeResponse {
   user: AuthUser;
 }
 
-export interface GoogleConfigResponse {
-  enabled: boolean;
-  clientId: string;
-}
-
 export interface AuthState {
   user: AuthUser | null;
   isInitialized: boolean;

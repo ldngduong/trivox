@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { Link } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,21 +21,14 @@ import {
   loginFormSchema,
   type LoginFormValues,
 } from '@/schemas/auth.schema';
-import {
-  getGoogleAuthConfig,
-  loginWithCredentials,
-  loginWithGoogleToken,
-} from '@/services/auth.service';
+import { loginWithCredentials } from '@/services/auth.service';
 import { useAuthStore } from '@/stores/auth.store';
+import { GoogleAuthButton } from './GoogleAuthButton';
 
 export function LoginForm() {
   const setUser = useAuthStore((s) => s.setUser);
-  const [googleError, setGoogleError] = useState<string | null>(null);
-
-  const googleConfigQuery = useQuery({
-    queryKey: ['google-auth-config'],
-    queryFn: getGoogleAuthConfig,
-  });
+  const [searchParams] = useSearchParams();
+  const oauthError = searchParams.get('error');
 
   const {
     register,
@@ -58,30 +49,9 @@ export function LoginForm() {
     },
   });
 
-  const googleMutation = useMutation({
-    mutationFn: loginWithGoogleToken,
-    onSuccess: (res) => {
-      setUser(res.user);
-    },
-    onError: (err) => {
-      setGoogleError(
-        err instanceof Error ? err.message : 'Đăng nhập Google thất bại',
-      );
-    },
-  });
-
-  useEffect(() => {
-    setGoogleError(null);
-  }, []);
-
   const onSubmit = (values: LoginFormValues) => {
     loginMutation.mutate(values);
   };
-
-  const googleClientId = googleConfigQuery.data?.clientId || '';
-  const isGoogleEnabled = Boolean(
-    googleConfigQuery.data?.enabled && googleClientId,
-  );
 
   return (
     <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/90 text-zinc-100">
@@ -90,32 +60,29 @@ export function LoginForm() {
           Đăng nhập vào Trivox
         </CardTitle>
         <CardDescription className="text-xs text-zinc-400">
-          Nhập thông tin tài khoản để truy cập danh sách dự án và không gian thiết kế 3D.
+          Đăng nhập bằng Google hoặc tài khoản email để truy cập dự án 3D.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isGoogleEnabled && (
-          <GoogleOAuthProvider clientId={googleClientId}>
-            <div className="flex flex-col items-center space-y-2 pb-2 border-b border-zinc-800">
-              <GoogleLogin
-                onSuccess={(cred) => {
-                  if (cred.credential) {
-                    googleMutation.mutate(cred.credential);
-                  }
-                }}
-                onError={() => {
-                  setGoogleError('Không thể xác thực qua Google.');
-                }}
-                theme="filled_black"
-                size="large"
-                width="360"
-              />
-              {googleError && (
-                <p className="text-xs text-zinc-300">{googleError}</p>
-              )}
-            </div>
-          </GoogleOAuthProvider>
+        <GoogleAuthButton />
+
+        {oauthError === 'google_not_configured' && (
+          <p className="text-xs text-zinc-300 bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2">
+            Máy chủ chưa cấu hình GOOGLE_CLIENT_ID và GOOGLE_CLIENT_SECRET trong api/.env.
+          </p>
         )}
+
+        {oauthError === 'google_auth_failed' && (
+          <p className="text-xs text-zinc-300 bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2">
+            Xác thực qua Google không thành công. Vui lòng thử lại.
+          </p>
+        )}
+
+        <div className="relative flex items-center py-1">
+          <div className="grow border-t border-zinc-800" />
+          <span className="mx-3 shrink text-[11px] text-zinc-500">hoặc</span>
+          <div className="grow border-t border-zinc-800" />
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FieldGroup>

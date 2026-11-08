@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useMutation } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,20 +21,12 @@ import {
   registerFormSchema,
   type RegisterFormValues,
 } from '@/schemas/auth.schema';
-import {
-  getGoogleAuthConfig,
-  loginWithGoogleToken,
-  registerWithCredentials,
-} from '@/services/auth.service';
+import { registerWithCredentials } from '@/services/auth.service';
 import { useAuthStore } from '@/stores/auth.store';
+import { GoogleAuthButton } from './GoogleAuthButton';
 
 export function RegisterForm() {
   const setUser = useAuthStore((s) => s.setUser);
-
-  const googleConfigQuery = useQuery({
-    queryKey: ['google-auth-config'],
-    queryFn: getGoogleAuthConfig,
-  });
 
   const {
     register,
@@ -57,21 +48,9 @@ export function RegisterForm() {
     },
   });
 
-  const googleMutation = useMutation({
-    mutationFn: loginWithGoogleToken,
-    onSuccess: (res) => {
-      setUser(res.user);
-    },
-  });
-
   const onSubmit = (values: RegisterFormValues) => {
     registerMutation.mutate(values);
   };
-
-  const googleClientId = googleConfigQuery.data?.clientId || '';
-  const isGoogleEnabled = Boolean(
-    googleConfigQuery.data?.enabled && googleClientId,
-  );
 
   return (
     <Card className="w-full max-w-md border-zinc-800 bg-zinc-900/90 text-zinc-100">
@@ -80,26 +59,17 @@ export function RegisterForm() {
           Tạo tài khoản Trivox
         </CardTitle>
         <CardDescription className="text-xs text-zinc-400">
-          Khởi tạo không gian làm việc để lưu trữ dự án và mô hình 3D.
+          Đăng ký nhanh qua Google hoặc email để bắt đầu tạo dự án 3D.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isGoogleEnabled && (
-          <GoogleOAuthProvider clientId={googleClientId}>
-            <div className="flex flex-col items-center space-y-2 pb-2 border-b border-zinc-800">
-              <GoogleLogin
-                onSuccess={(cred) => {
-                  if (cred.credential) {
-                    googleMutation.mutate(cred.credential);
-                  }
-                }}
-                theme="filled_black"
-                size="large"
-                width="360"
-              />
-            </div>
-          </GoogleOAuthProvider>
-        )}
+        <GoogleAuthButton />
+
+        <div className="relative flex items-center py-1">
+          <div className="grow border-t border-zinc-800" />
+          <span className="mx-3 shrink text-[11px] text-zinc-500">hoặc</span>
+          <div className="grow border-t border-zinc-800" />
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <FieldGroup>

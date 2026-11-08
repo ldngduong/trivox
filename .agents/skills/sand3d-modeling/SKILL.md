@@ -21,4 +21,4 @@ description: >-
 2. **Cô lập tiến trình (`subprocess`):**
    - `bpy` giữ trạng thái scene toàn cục trong process. Mỗi yêu cầu biên dịch `.glb` phải chạy trong một worker process độc lập hoặc chạy `s3d.empty_scene()` trong worker tuần tự có khóa và timeout cứng (`15s`).
 3. **Vòng lặp tự sửa lỗi (Self-Healing Loop):**
-   - Nếu quá trình thực thi ném `ValueError` hoặc `TypeError` từ `sand3d`, thu thập traceback ngắn gọn trả về cho DeepSeek Agent tự sửa code trước khi kết thúc lượt phản hồi.
+   - Nếu quá trình thực thi ném `ValueError` hoặc `TypeError` từ `sand3d`, thu thập traceback ngắn gọn trả về cho Agent tự sửa code trước khi kết thúc lượt phản hồi.
