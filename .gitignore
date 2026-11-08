@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Build outputs
+dist/
+build/
+dist-ssr/
+*.tsbuildinfo
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables (keep examples)
+.env
+.env.*
+!.env.example
+
+# Runtime generated 3D assets & local storage
+apps/api/storage/
+*.glb
+*.blend
+*.blend1
+
+# Logs & OS files
+logs/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

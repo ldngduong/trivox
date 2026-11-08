@@ -1,0 +1,5 @@
+fastapi==0.162.1
+uvicorn==0.54.0
+pydantic==2.14.3
+sand3d==1.6.3
+bpy==4.5.15
